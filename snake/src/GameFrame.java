@@ -1,4 +1,6 @@
-import javax.swing.JFrame;
+import javax.swing.*;
+import java.awt.*;
+
 public class GameFrame extends JFrame {
     GameFrame(){
         this.add(new GamePanel());

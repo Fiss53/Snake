@@ -1,10 +1,7 @@
 import java.awt.*;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import javax.swing.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.util.Random;
 import javax.swing.JPanel;
 
@@ -12,9 +9,9 @@ public class GamePanel extends JPanel implements ActionListener {
     static final int SCREEN_WIDTH = 600;
     static final int SCREEN_HEIGHT = 600;
     static final int UNIT_SIZE = 25;
-    static final int GAME_UNITS = (SCREEN_WIDTH*SCREEN_HEIGHT)/UNIT_SIZE;
+    static final int GAME_UNITS = (SCREEN_WIDTH * SCREEN_HEIGHT) / UNIT_SIZE;
     static final int DELAY = 75;
-    int bodyParts ;
+    int bodyParts = 1;
     int appleEaten;
     int appleX;
     int appleY;
@@ -30,15 +27,25 @@ public class GamePanel extends JPanel implements ActionListener {
         this.setFocusable(true);
         this.setVisible(true);
         this.setFocusable(true);
+        this.addKeyListener(new MyKeyAdapter());
+
     }
     public void move () {
+
+
 
     }
     public void startGame() {
         newApple();
         running = true;
         timer = new Timer(DELAY,this);
-        timer.start();
+        if (running){
+            timer.setDelay(DELAY);
+            timer.start();
+        }
+        else {
+            timer.stop();
+        }
 
 
     }
@@ -67,10 +74,8 @@ public class GamePanel extends JPanel implements ActionListener {
     }
     public void drawApple(Graphics g){
         if(running){
-            newApple();
-            g.fillRect(appleX,appleY,UNIT_SIZE,UNIT_SIZE);
-            g.setPaintMode();
             g.setColor(Color.RED);
+            newApple();
         }
     }
     public void checkCollisions() {
@@ -78,6 +83,7 @@ public class GamePanel extends JPanel implements ActionListener {
     }
     public void gameOver(Graphics g){
 
+        timer.stop();
     }
     public void newApple(){
         appleX = random.nextInt(0,UNIT_SIZE);
@@ -87,11 +93,35 @@ public class GamePanel extends JPanel implements ActionListener {
     }
     public void actionPerformed(ActionEvent e){
 
+       // paintComponent();
     }
     public class MyKeyAdapter extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
 
+            switch(e.getKeyCode()) {
+
+                case KeyEvent.VK_LEFT:
+                    if(direction != 'R') {
+                        direction = 'L';
+                    }
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    if(direction != 'L') {
+                        direction = 'R';
+                    }
+                    break;
+                case KeyEvent.VK_UP:
+                    if(direction != 'D') {
+                        direction = 'U';
+                    }
+                    break;
+                case KeyEvent.VK_DOWN:
+                    if(direction != 'U') {
+                        direction = 'D';
+                    }
+                    break;
+            }
         }
     }
 }
