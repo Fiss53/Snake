@@ -6,19 +6,24 @@ import java.util.Random;
 import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements ActionListener {
-    static final int SCREEN_WIDTH = 600;
-    static final int SCREEN_HEIGHT = 600;
+    static final int SCREEN_WIDTH = 625;
+    static final int SCREEN_HEIGHT = 625;
     static final int UNIT_SIZE = 25;
-    static final int GAME_UNITS = (SCREEN_WIDTH * SCREEN_HEIGHT) / UNIT_SIZE;
+    static final int GAME_UNITS = (SCREEN_WIDTH * SCREEN_HEIGHT) / (UNIT_SIZE*UNIT_SIZE);
+
     static final int DELAY = 75;
-    int bodyParts = 1;
+    final int[] x = new int[GAME_UNITS];
+    final int[] y = new int[GAME_UNITS];
+
+    int bodyParts = 3;
     int appleEaten;
     int appleX;
     int appleY;
-    char direction = 'R';
+    char direction = 'L';
     boolean running = true;
     Timer timer;
     Random random;
+
 
     GamePanel(){
         random = new Random();
@@ -28,31 +33,34 @@ public class GamePanel extends JPanel implements ActionListener {
         this.setVisible(true);
         this.setFocusable(true);
         this.addKeyListener(new MyKeyAdapter());
+        startGame();
 
     }
     public void move () {
-
-
+        for(int i = bodyParts; i > 0; i--){
+            x[i] = x[i - 1] + UNIT_SIZE;
+            y[i] = y[i - 1] + UNIT_SIZE;
+        }
+    }
+    public void initializeTabs(){
+        x[0] = 300;
+        y[0] = 300;
+        for (int i = 0; i < bodyParts; i++){
+            x[i] = x[i] + UNIT_SIZE;
+            y[i] = y[i];
+        }
 
     }
     public void startGame() {
+        initializeTabs();
         newApple();
         running = true;
         timer = new Timer(DELAY,this);
-        if (running){
-            timer.setDelay(DELAY);
-            timer.start();
-        }
-        else {
-            timer.stop();
-        }
-
-
+        timer.start();
     }
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         draw(g);
-        drawApple(g);
 
     }
 
@@ -71,11 +79,17 @@ public class GamePanel extends JPanel implements ActionListener {
                 intervalle_col += UNIT_SIZE;
             }
         }
+        if (running){
+            for(int i = 0; i < bodyParts; i++){
+                g.fillRect(x[i],y[i],UNIT_SIZE,UNIT_SIZE);
+            }
+        }
     }
     public void drawApple(Graphics g){
         if(running){
             g.setColor(Color.RED);
             newApple();
+            g.fillRect(appleX,appleY,UNIT_SIZE,UNIT_SIZE);
         }
     }
     public void checkCollisions() {
@@ -92,8 +106,20 @@ public class GamePanel extends JPanel implements ActionListener {
         appleY = appleY * UNIT_SIZE;
     }
     public void actionPerformed(ActionEvent e){
+        if(running) {
+            move();
+            checkApple();
+            //checkCollisions();
+        }
+        repaint();
 
-       // paintComponent();
+    }
+    public void checkApple(){
+        if((x[0] == appleX) && (y[0] == appleY)){
+            bodyParts++;
+            appleEaten++;
+            newApple();
+        }
     }
     public class MyKeyAdapter extends KeyAdapter {
         @Override
@@ -101,7 +127,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
             switch(e.getKeyCode()) {
 
-                case KeyEvent.VK_LEFT:
+                case KeyEvent.VK_Q:
                     if(direction != 'R') {
                         direction = 'L';
                     }
